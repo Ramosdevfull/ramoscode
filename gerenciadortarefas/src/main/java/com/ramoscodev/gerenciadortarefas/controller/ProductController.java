@@ -24,6 +24,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.PutMapping;
 
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+
 
 
 
@@ -43,7 +46,14 @@ public class ProductController {
 
     @GetMapping("/products")
     public ResponseEntity<List<Product>> getAllProducts() {
-        return ResponseEntity.status(HttpStatus.OK).body(productService.getAllProducts());
+        List<Product> productList = productService.getAllProducts();
+        if (!productList.isEmpty()) {
+            for(Product p : productList) {
+                Long id = p.getId();
+                p.add(linkTo(methodOn(ProductController.class).getOneProduct(id)).withSelfRel());
+            }
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(productList);
     }
 
     @GetMapping("/product/{id}")
@@ -52,6 +62,7 @@ public class ProductController {
         if (pOptional.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Product not found!!");
         }
+        pOptional.get().add(linkTo(methodOn(ProductController.class).getAllProducts()).withRel("Products_List"));
         return ResponseEntity.status(HttpStatus.OK).body(pOptional.get());
     }
 

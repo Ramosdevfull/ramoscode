@@ -1,6 +1,9 @@
 package com.ramoscodev.gerenciadortarefas.model;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
+
+import org.springframework.hateoas.RepresentationModel;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -11,7 +14,7 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "products")
-public class Product {
+public class Product extends RepresentationModel<Product> implements Serializable {
     
     @Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
